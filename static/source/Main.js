@@ -36,14 +36,19 @@
 			$('#spinner').css('display', 'none');
 			$('#resultTable').css('display', 'table');
 
+			var error;
 			if (!rides) {
-				return console.log("No answer from server");
+				error = "No answer from server";
 			}
-			if (rides.length === 0) {
-				return console.log("No efforts found");
+			else if (rides.length === 0) {
+				error = "No efforts found";
 			}
-			if (rides[0].message) {
-				return console.log("Efforts not loaded:", rides[0].message);
+			else if (rides[0].message) {
+				error = "Efforts not loaded: " + rides[0].message;
+			}
+			if (error) {
+				$('#asterixText').css('display', 'block').html(error);
+				return console.log(error);
 			}
 
 			rides.sort(function (r1, r2) {

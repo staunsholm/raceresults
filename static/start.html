@@ -79,6 +79,11 @@
             </div>
             <div class="mdl-card__supporting-text">
                 <div class="mdl-spinner mdl-js-spinner is-active" style="display: none" id="spinner"></div>
+
+                <p style="display:none" id="asterixText">
+                    * = Strava did not return name of rider. Try clicking FIND EFFORTS again in a few minutes.
+                </p>
+
                 <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" id="resultTable">
                     <thead>
                     <tr>
@@ -95,10 +100,6 @@
                     <tbody id="results">
                     </tbody>
                 </table>
-
-                <p style="display:none">
-                    * = Strava did not return name of rider. Try clicking FIND EFFORTS again in a few minutes.
-                </p>
             </div>
         </div>
 
