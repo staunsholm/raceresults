@@ -24,8 +24,20 @@
 
 		$.getJSON('/api/test' + location.search, {
 			segment: $('#segment').val(),
-			date: $('#dateOfRace').val()
-		}, function (rides) {
+			date: $('#dateOfRace').val(),
+			startTime: $('#startTime').val(),
+			endTime: $('#endTime').val()
+		}, function renderTable(rides) {
+
+			if (!rides) {
+				return console.log("No answer from server");
+			}
+			if (rides.length === 0) {
+				return console.log("No efforts found");
+			}
+			if (rides[0].message) {
+				return console.log("Efforts not loaded:", rides[0].message);
+			}
 
 			rides.sort(function (r1, r2) {
 				return r1.elapsed_time - r2.elapsed_time;

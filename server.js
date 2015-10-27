@@ -1,6 +1,8 @@
 var cc = require('config-multipaas'),
 	restify = require('restify'),
-	fs = require('fs');
+	fs = require('fs'),
+	moment = require('moment'),
+	log = require('color-log');
 
 var request = require('request');
 
@@ -45,27 +47,13 @@ app.get(/\/api\/test/, function send(req, res, next) {
 		function (error, response, body) {
 			var access_token;
 			if (!error && response.statusCode == 200) {
-				access_token = body.access_token;
-				request.get({
-					url: 'https://www.strava.com/api/v3/segments/' + req.query.segment + '/all_efforts',
-					qs: {
-						access_token: access_token,
-						start_date_local: req.query.date + 'T00:00:00Z',
-						end_date_local: req.query.date + 'T23:59:59Z'
-					}
-				}, function (error, response, body) {
-					var efforts = JSON.parse(body);
-
-					for (var i = 0, l = efforts.length; i < l; i++) {
-						efforts[i].athlete = extendAthlete(efforts[i].athlete, access_token);
-					}
-
+				getEfforts(body.access_token, [], req.query, function(efforts) {
+					log.info("Retrieved", efforts.length, "efforts");
 					res.send(efforts);
 				});
-
 			}
 			else {
-				console.log(error);
+				log.error(error);
 				res.send('strava token error');
 			}
 
@@ -74,11 +62,52 @@ app.get(/\/api\/test/, function send(req, res, next) {
 	);
 });
 
+function getEfforts(access_token, efforts, query, onAllEffortsRetrieved, page) {
+	page = page || 1;
+
+	request.get({
+		url: 'https://www.strava.com/api/v3/segments/' + query.segment + '/all_efforts',
+		qs: {
+			access_token: access_token,
+			start_date_local: query.date + 'T' + query.startTime + ':00Z',
+			end_date_local: query.date + 'T' + query.endTime + ':00Z',
+			per_page: 200,
+			page: page
+		}
+	}, function (error, response, body) {
+		var moreEfforts = JSON.parse(body);
+
+		for (var i = 0, l = moreEfforts.length; i < l; i++) {
+			moreEfforts[i].athlete = extendAthlete(moreEfforts[i].athlete, access_token);
+		}
+
+		efforts = efforts.concat(moreEfforts);
+
+		if (moreEfforts.length === 200) {
+			getEfforts(access_token, efforts, query, onAllEffortsRetrieved, page + 1);
+		}
+		else {
+			onAllEffortsRetrieved(efforts);
+		}
+	});
+}
+
 var athletes = {};
+var currentlyFetching = 0;
 function extendAthlete(athlete, access_token) {
 	if (athletes[athlete.id]) {
 		return athletes[athlete.id];
 	}
+
+	// wait a bit if we have too many request going already
+	if (currentlyFetching > 10) {
+		setTimeout(function () {
+			extendAthlete(athlete, access_token);
+		}, 20000);
+		return athlete;
+	}
+
+	currentlyFetching++;
 
 	request.get({
 		url: 'https://www.strava.com/api/v3/athletes/' + athlete.id,
@@ -86,18 +115,44 @@ function extendAthlete(athlete, access_token) {
 			access_token: access_token
 		}
 	}, function (error, response, athlete) {
+		currentlyFetching--;
+
 		if (!error && response.statusCode == 200) {
 			athlete = JSON.parse(athlete);
 			athletes[athlete.id] = athlete;
 		}
 		else {
-			console.log("athlete info not loaded", response.statusCode, athlete);
+			log.warn("athlete info not loaded", response.statusCode, athlete);
 		}
 	});
 
 	return athlete;
 }
 
-app.listen(config.get('PORT'), config.get('IP'), function () {
-	console.log("Listening on " + config.get('IP') + ", port " + config.get('PORT'))
-});
+setInterval(function backup() {
+	fs.writeFile("./backup/athletes.json", JSON.stringify(athletes), function (err) {
+		if (err) {
+			return log.error(err);
+		}
+
+		log.info(moment().format('DD-MM-YYYY HH:mm:ss') + ": Athletes backup was made");
+	});
+}, 1000 * 60);
+
+function restore() {
+	fs.readFile("./backup/athletes.json", "utf8", function (err, json) {
+		if (err) {
+			log.warn(err);
+		}
+		else {
+			athletes = JSON.parse(json);
+			log.info("Athletes restored");
+		}
+
+		app.listen(config.get('PORT'), config.get('IP'), function () {
+			log.info("Listening on " + config.get('IP') + ", port " + config.get('PORT'))
+		});
+	});
+}
+restore();
+
