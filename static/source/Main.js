@@ -16,6 +16,7 @@
 			return athlete.firstname + " " + athlete.lastname;
 		}
 		else {
+			$('#asterixText').css('display', 'block');
 			return athlete.id + "*";
 		}
 	}
@@ -51,7 +52,7 @@
 				html += "<td>" + (i + 1) + "</td>";
 				html += '<td class="mdl-data-table__cell--non-numeric">' + nameFormat(ride.athlete) + "</td>";
 				html += "<td>" + durationFormat(ride.elapsed_time) + "</td>";
-				html += "<td>" + moment(ride.start_date_local).format('HH:mm') + "</td>";
+				html += "<td>" + moment(ride.start_date).format('HH:mm') + "</td>";
 				html += "<td>" + (Math.round(ride.average_watts) || '- ') + "W</td>";
 				html += "<td>" + (Math.round(ride.average_heartrate) || '- ') + "bpm</td>";
 				html += "<td>" + (Math.round(ride.average_cadence) || '- ') + "rpm</td>";

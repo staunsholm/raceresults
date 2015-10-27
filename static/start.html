@@ -49,12 +49,20 @@
             <div class="mdl-card__supporting-text">
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" type="text" id="segment" value="10641704"/>
+                    <input class="mdl-textfield__input" type="text" id="segment" value="10768588"/>
                     <label class="mdl-textfield__label" for="segment">Segment ID</label>
                 </div>
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" type="text" id="dateOfRace" value="2015-10-22"/>
+                    <input class="mdl-textfield__input" type="text" id="dateOfRace" value="2015-10-27"/>
                     <label class="mdl-textfield__label" for="dateOfRace">Race Date</label>
+                </div>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <input class="mdl-textfield__input" type="text" id="startTime" value="00:00"/>
+                    <label class="mdl-textfield__label" for="startTime">Start time</label>
+                </div>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <input class="mdl-textfield__input" type="text" id="endTime" value="23:59"/>
+                    <label class="mdl-textfield__label" for="endTime">End time</label>
                 </div>
 
             </div>
@@ -70,19 +78,6 @@
                 <h2 class="mdl-card__title-text">Race Results</h2>
             </div>
             <div class="mdl-card__supporting-text">
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" type="text" id="startTime" value="18:30"/>
-                    <label class="mdl-textfield__label" for="startTime">Start time</label>
-                </div>
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" type="text" id="endTime" value="20:30"/>
-                    <label class="mdl-textfield__label" for="endTime">End time</label>
-                </div>
-            </div>
-            <div class="mdl-card__supporting-text">
-                <p>
-                * = Strava did not return name of rider. Try reloading page in a minute.
-                </p>
                 <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                     <thead>
                     <tr>
@@ -99,6 +94,10 @@
                     <tbody id="results">
                     </tbody>
                 </table>
+
+                <p style="display:none">
+                    * = Strava did not return name of rider. Try clicking FIND EFFORTS again in a few minutes.
+                </p>
             </div>
         </div>
 
