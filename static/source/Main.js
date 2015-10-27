@@ -23,12 +23,18 @@
 
 	$('#findEfforts').click(function () {
 
+		$('#spinner').css('display', 'block');
+		$('#resultTable').css('display', 'none');
+
 		$.getJSON('/api/test' + location.search, {
 			segment: $('#segment').val(),
 			date: $('#dateOfRace').val(),
 			startTime: $('#startTime').val(),
 			endTime: $('#endTime').val()
 		}, function renderTable(rides) {
+
+			$('#spinner').css('display', 'none');
+			$('#resultTable').css('display', 'table');
 
 			if (!rides) {
 				return console.log("No answer from server");
