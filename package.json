@@ -30,7 +30,8 @@
     "request": "^2.65.0",
     "extend": "^3.0.0",
     "moment": "^2.10.6",
-    "color-log": "^0.0.2"
+    "color-log": "^0.0.2",
+    "mongodb": "^2.0.47"
   },
   "devDependencies": {},
   "bundleDependencies": [],

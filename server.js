@@ -4,6 +4,7 @@ var cc = require('config-multipaas'),
 	moment = require('moment'),
 	log = require('color-log');
 
+var MongoClient = require('mongodb').MongoClient;
 var request = require('request');
 
 var config = cc(),
@@ -30,6 +31,11 @@ app.get(/\/start\.html/, restify.serveStatic({
 app.get(/\/index\.html/, restify.serveStatic({
 	directory: './static/',
 	file: 'index.html'
+}));
+
+app.get(/\/login\.html/, restify.serveStatic({
+	directory: './static/',
+	file: 'login.html'
 }));
 
 app.get(/\/api\/test/, function send(req, res, next) {
